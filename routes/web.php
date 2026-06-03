@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\AssujettiController;
 use App\Http\Controllers\MouvementController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 */
 
 Route::middleware(['auth'])->group(function () {
+    Broadcast::routes();
     Route::get('/', 'App\Http\Controllers\AssujettiController@accueil')->name('accueil');
     Route::resource('/assujettis', AssujettiController::class);
     Route::resource('/mouvements', MouvementController::class);
@@ -34,6 +36,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pw-update', [AuthenticatedSessionController::class, 'update'])->name('update.password');
     Route::get('/get-tarif', [TarifController::class, 'getTarif'])->name('get-tarif');
     Route::get('/situation-generale', [SituationController::class, 'situationGenerale'])->name('situation.generale');
+
+    Route::get('/test-broadcast', function () {
+        event(new \App\Events\AssujettiEvent('Test notification temps réel !', 'admis', 'success', 'inc', 'centre-test'));
+        return 'Event broadcasté !';
+    })->name('test.broadcast');
 
 });
 require __DIR__.'/auth.php';
