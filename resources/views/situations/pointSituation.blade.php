@@ -13,7 +13,10 @@
 @section('content')
     <section class="content-header">
         <h1 class="pull-center">Point de situation du {{ now() }}</h1>
-
+        <div class="text-right" style="margin-bottom: 10px;">
+            <a href="{{ route('situation.generale.export.excel') }}" class="btn btn-success"><i class="fa fa-file-excel-o"></i> Exporter Excel</a>
+            <a href="{{ route('situation.generale.export.word') }}" class="btn btn-primary"><i class="fa fa-file-word-o"></i> Exporter Word</a>
+        </div>
     </section>
     <div class="content">
         <div class="clearfix mt-1"></div>
