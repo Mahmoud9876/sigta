@@ -36,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pw-update', [AuthenticatedSessionController::class, 'update'])->name('update.password');
     Route::get('/get-tarif', [TarifController::class, 'getTarif'])->name('get-tarif');
     Route::get('/situation-generale', [SituationController::class, 'situationGenerale'])->name('situation.generale');
+    Route::get('/situation-generale/export/excel', [SituationController::class, 'exportSituationExcel'])->name('situation.generale.export.excel');
+    Route::get('/situation-generale/export/word', [SituationController::class, 'exportSituationWord'])->name('situation.generale.export.word');
 
     Route::get('/test-broadcast', function () {
         event(new \App\Events\AssujettiEvent('Test notification temps réel !', 'admis', 'success', 'inc', 'centre-test'));
