@@ -288,8 +288,270 @@ class SituationController extends Controller
     
 public function situationGenerale(Request $request)
 {
+    return view('situations.pointSituation', $this->buildSituationData());
+}
 
+public function exportSituationExcel()
+{
+    return \Maatwebsite\Excel\Facades\Excel::download(
+        new \App\Exports\SituationGeneraleExport($this->buildSituationData()),
+        'situation-generale-' . now()->format('Y-m-d') . '.xlsx'
+    );
+}
 
+public function exportSituationWord()
+{
+    $phpWord = new \PhpOffice\PhpWord\PhpWord();
+
+    $section = $phpWord->addSection([
+        'orientation' => 'landscape',
+        'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(11.69),
+        'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.27),
+        'marginTop' => 800,
+        'marginRight' => 700,
+        'marginBottom' => 800,
+        'marginLeft' => 700,
+    ]);
+
+    $data = $this->buildSituationData();
+
+    $bold = ['bold' => true];
+    $center = ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER];
+    $headerFill = ['bgColor' => 'D9D9D9'];
+
+    $section->addText('POINT DE SITUATION DU ' . now()->format('d/m/Y'), ['bold' => true, 'size' => 14, 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+    $section->addText('SITUATION DU ' . now()->format('d/m/Y'), $bold);
+    $section->addTextBreak(0, 60);
+
+    $moyens = [
+        'CAR DE LIGNE' => [
+            'utilise' => $data['moyenCarUtilise'],
+            'prevu' => [
+                'Navette' => $data['moyenCarPrevuNavette'],
+                'ONCF' => $data['moyenCarPrevuOncf'],
+                'Propre moyen' => $data['moyenCarPrevuPropreMoyen'],
+                'Car de Ligne' => $data['moyenCarPrevuCar'],
+            ],
+        ],
+        'NAVETTE' => [
+            'utilise' => $data['moyenNavetteUtilise'],
+            'prevu' => [
+                'Navette' => $data['moyenNavettePrevuNavette'],
+                'ONCF' => $data['moyenNavettePrevuOncf'],
+                'Propre moyen' => $data['moyenNavettePrevuPropreMoyen'],
+                'Car de Ligne' => $data['moyenNavettePrevuCar'],
+            ],
+        ],
+        'ONCF' => [
+            'utilise' => $data['moyenOncfUtilise'],
+            'prevu' => [
+                'Navette' => $data['moyenOncfPrevuNavette'],
+                'ONCF' => $data['moyenOncfPrevuOncf'],
+                'Propre moyen' => $data['moyenOncfPrevuPropreMoyen'],
+                'Car de Ligne' => $data['moyenOncfPrevuCar'],
+            ],
+        ],
+        'PROPRE MOYEN' => [
+            'utilise' => $data['moyenPropreMoyenUtilise'],
+            'prevu' => [
+                'Navette' => $data['moyenPropreMoyenPrevuNavette'],
+                'ONCF' => $data['moyenPropreMoyenPrevuOncf'],
+                'Propre moyen' => $data['moyenPropreMoyenPrevuPropreMoyen'],
+                'Car de Ligne' => $data['moyenPropreMoyenPrevuCar'],
+            ],
+        ],
+    ];
+
+    $table = $section->addTable(['borderSize' => 6, 'cellMargin' => 60, 'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER]);
+
+    // Header
+    $table->addRow();
+    $this->writeHeaderCell($table, 'DATE DE PRÉSENTATION', 1100, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'EFFECTIF THÉORIQUE', 1100, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'EFFECTIF PRÉSENTÉ', 1100, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'EFFECTIF ABSENT', 1000, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'ADMIS', 800, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'MOYENS DE TRANSPORT', 1200, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'UTILISÉ', 800, $headerFill, $bold, $center);
+    $this->writeHeaderCell($table, 'PRÉVU', 1200, $headerFill, $bold, $center);
+
+    $statsCols = [now()->format('d/m/Y'), $data['effTheoriqueNow'], $data['effPresenteNow'], $data['effAbsentNow'], $data['effAdmisNow']];
+    $firstRowOfDay = true;
+
+    foreach ($moyens as $moyen => $values) {
+        $rowIndex = 0;
+        $totalRows = count($values['prevu']);
+        foreach ($values['prevu'] as $prevLabel => $prevValue) {
+            $table->addRow();
+
+            // Merged stats columns (span the whole day block, 16 rows)
+            if ($firstRowOfDay) {
+                foreach ($statsCols as $idx => $val) {
+                    $cell = $table->addCell($this->colWidth($idx));
+                    $cell->getStyle()->setVMerge('restart');
+                    $cell->getStyle()->setValign('center');
+                    $cell->addText((string) $val, null, $center);
+                }
+                $firstRowOfDay = false;
+            } else {
+                for ($i = 0; $i < 5; $i++) {
+                    $cell = $table->addCell($this->colWidth($i));
+                    $cell->getStyle()->setVMerge('continue');
+                }
+            }
+
+            // Moyen name (merge 4 rows per transport)
+            $cell = $table->addCell(1200);
+            if ($rowIndex === 0) {
+                $cell->getStyle()->setVMerge('restart');
+                $cell->getStyle()->setValign('center');
+                $cell->addText($moyen, $bold, $center);
+            } else {
+                $cell->getStyle()->setVMerge('continue');
+            }
+
+            // Utilisé (merge 4 rows per transport)
+            $cell = $table->addCell(800);
+            if ($rowIndex === 0) {
+                $cell->getStyle()->setVMerge('restart');
+                $cell->getStyle()->setValign('center');
+                $cell->addText((string) $values['utilise'], null, $center);
+            } else {
+                $cell->getStyle()->setVMerge('continue');
+            }
+
+            $table->addCell(1200)->addText($prevLabel . ' : ' . $prevValue, null, $center);
+
+            $rowIndex++;
+        }
+    }
+
+    // TOTAL row
+    $table->addRow();
+    $table->addCell($this->colWidth(0))->addText('TOTAL', $bold, $center);
+    $table->addCell($this->colWidth(1))->addText((string) $data['effTheoriqueNow'], null, $center);
+    $table->addCell($this->colWidth(2))->addText((string) $data['effPresenteNow'], null, $center);
+    $table->addCell($this->colWidth(3))->addText((string) $data['effAbsentNow'], null, $center);
+    $table->addCell($this->colWidth(4))->addText((string) $data['effAdmisNow'], null, $center);
+    $table->addCell($this->colWidth(5))->addText('', null, $center);
+    $table->addCell($this->colWidth(6))->addText('', null, $center);
+    $table->addCell($this->colWidth(7))->addText('', null, $center);
+
+    $section->addTextBreak();
+
+    // ================= SITUATION GLOBALE =================
+    $section->addText('SITUATION GLOBALE', $bold);
+    $section->addTextBreak(0, 60);
+
+    $globalTable = $section->addTable(['borderSize' => 6, 'cellMargin' => 60, 'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER]);
+    $globalTable->addRow();
+    $this->writeHeaderCell($globalTable, '', 1200, $headerFill, $bold, $center);
+    $this->writeHeaderCell($globalTable, 'CONVOQUÉS', 1300, $headerFill, $bold, $center);
+    $this->writeHeaderCell($globalTable, 'PRÉSENTÉS', 1300, $headerFill, $bold, $center);
+    $this->writeHeaderCell($globalTable, 'ADMIS', 1300, $headerFill, $bold, $center);
+    $globalTable->addRow();
+    $globalTable->addCell(1200)->addText('TOTAL', $bold, $center);
+    $globalTable->addCell(1300)->addText((string) $data['effTheoriqueGlobal'], null, $center);
+    $globalTable->addCell(1300)->addText((string) $data['effPresenteGlobal'], null, $center);
+    $globalTable->addCell(1300)->addText((string) $data['effAdmisGlobal'], null, $center);
+
+    $section->addTextBreak();
+
+    $moyensGlobal = [
+        'CAR DE LIGNE' => [
+            'utilise' => $data['moyenCarUtiliseGlobal'],
+            'prevu' => [
+                'Car de Ligne' => $data['moyenCarPrevuCarGlobal'],
+                'Navette' => $data['moyenCarPrevuNavetteGlobal'],
+                'ONCF' => $data['moyenCarPrevuOncfGlobal'],
+                'Propre moyen' => $data['moyenCarPrevuPropreMoyenGlobal'],
+            ],
+        ],
+        'NAVETTE' => [
+            'utilise' => $data['moyenNavetteUtiliseGlobal'],
+            'prevu' => [
+                'Navette' => $data['moyenNavettePrevuNavetteGlobal'],
+                'ONCF' => $data['moyenNavettePrevuOncfGlobal'],
+                'Propre moyen' => $data['moyenNavettePrevuPropreMoyenGlobal'],
+                'Car de Ligne' => $data['moyenNavettePrevuCarGlobal'],
+            ],
+        ],
+        'ONCF' => [
+            'utilise' => $data['moyenOncfUtiliseGlobal'],
+            'prevu' => [
+                'Navette' => $data['moyenOncfPrevuNavetteGlobal'],
+                'ONCF' => $data['moyenOncfPrevuOncfGlobal'],
+                'Propre moyen' => $data['moyenOncfPrevuPropreMoyenGlobal'],
+                'Car de Ligne' => $data['moyenOncfPrevuCarGlobal'],
+            ],
+        ],
+        'PROPRE MOYEN' => [
+            'utilise' => $data['moyenPropreMoyenUtiliseGlobal'],
+            'prevu' => [
+                'Navette' => $data['moyenPropreMoyenPrevuNavetteGlobal'],
+                'ONCF' => $data['moyenPropreMoyenPrevuOncfGlobal'],
+                'Propre moyen' => $data['moyenPropreMoyenPrevuPropreMoyenGlobal'],
+                'Car de Ligne' => $data['moyenPropreMoyenPrevuCarGlobal'],
+            ],
+        ],
+    ];
+
+    $globalTranspTable = $section->addTable(['borderSize' => 6, 'cellMargin' => 60, 'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER]);
+    $globalTranspTable->addRow();
+    $this->writeHeaderCell($globalTranspTable, 'MOYENS DE TRANSPORT', 2400, $headerFill, $bold, $center);
+    $this->writeHeaderCell($globalTranspTable, 'PRÉVU', 2400, $headerFill, $bold, $center);
+    $this->writeHeaderCell($globalTranspTable, 'UTILISÉ', 2400, $headerFill, $bold, $center);
+
+    foreach ($moyensGlobal as $moyen => $values) {
+        $rowIndex = 0;
+        foreach ($values['prevu'] as $prevLabel => $prevValue) {
+            $globalTranspTable->addRow();
+            $cell = $globalTranspTable->addCell(2400);
+            if ($rowIndex === 0) {
+                $cell->getStyle()->setVMerge('restart');
+                $cell->getStyle()->setValign('center');
+                $cell->addText($moyen, $bold, $center);
+            } else {
+                $cell->getStyle()->setVMerge('continue');
+            }
+            $globalTranspTable->addCell(2400)->addText($prevLabel . ' : ' . $prevValue, null, $center);
+            $cellU = $globalTranspTable->addCell(2400);
+            if ($rowIndex === 0) {
+                $cellU->getStyle()->setVMerge('restart');
+                $cellU->getStyle()->setValign('center');
+                $cellU->addText((string) $values['utilise'], null, $center);
+            } else {
+                $cellU->getStyle()->setVMerge('continue');
+            }
+            $rowIndex++;
+        }
+    }
+
+    $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+
+    $tempPath = tempnam(sys_get_temp_dir(), 'situation');
+    $writer->save($tempPath);
+
+    return response()->download($tempPath, 'situation-generale-' . now()->format('Y-m-d') . '.docx')->deleteFileAfterSend(true);
+}
+
+private function writeHeaderCell($table, $text, $width, $fill, $font, $para)
+{
+    $cell = $table->addCell($width);
+    if ($fill) {
+        $cell->getStyle()->setShading(['fill' => $fill['bgColor']]);
+    }
+    $cell->addText($text, $font, $para);
+}
+
+private function colWidth($index)
+{
+    $widths = [1100, 1100, 1100, 1000, 800, 1200, 800, 1200];
+    return $widths[$index];
+}
+
+private function buildSituationData()
+{
     $effTheoriqueNow=Assujetti::where('convocation', now())->count();
     $effPresenteNow=Assujetti::where('presentation', now())->count();
     $effAdmisNow=Assujetti::where('presentation', now())->where('admis',true)->count();
@@ -394,9 +656,7 @@ public function situationGenerale(Request $request)
      $moyenPropreMoyenPrevuPropreMoyenGlobal=Assujetti::where('vers_selection','PROPRE MOYEN')
      ->where('vers_selection_th','PROPRE MOYEN')->count();
 
-
-
-    return view('situations.pointSituation', compact(
+    return compact(
     'moyenPropreMoyenPrevuPropreMoyenGlobal','moyenPropreMoyenPrevuCarGlobal',
     'moyenPropreMoyenPrevuOncfGlobal','moyenPropreMoyenPrevuNavetteGlobal',
     'moyenOncfPrevuPropreMoyenGlobal','moyenOncfPrevuCarGlobal',
@@ -408,7 +668,6 @@ public function situationGenerale(Request $request)
     'effAdmisGlobal','effPresenteGlobal','effTheoriqueGlobal',
     'moyenPropreMoyenUtiliseGlobal','moyenOncfUtiliseGlobal',
     'moyenNavetteUtiliseGlobal','moyenCarUtiliseGlobal',
-    'effTheoriqueGlobal','effPresenteGlobal','effAdmisGlobal',
 
     'moyenPropreMoyenPrevuPropreMoyen','moyenPropreMoyenPrevuCar',
     'moyenPropreMoyenPrevuOncf','moyenPropreMoyenPrevuNavette',
@@ -421,8 +680,7 @@ public function situationGenerale(Request $request)
     'moyenPropreMoyenUtilise','moyenOncfUtilise',
     'moyenNavetteUtilise','moyenCarUtilise',
     'effTheoriqueNow','effPresenteNow','effAdmisNow','effAbsentNow'
-));
-
+);
 }
 
 }
