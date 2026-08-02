@@ -17,6 +17,8 @@ class AssujettisSeeder extends Seeder
      */
     public function run()
     {
+        ini_set('memory_limit', -1);
+
         $result = Excel::toArray(new CsvImport, public_path('files/csv/assujettis.xlsx'));
 
         foreach ($result[0] as $key => $assujetti) {
