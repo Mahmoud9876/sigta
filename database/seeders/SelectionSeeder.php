@@ -25,6 +25,7 @@ class SelectionSeeder extends Seeder
             ]);
         }
 
-        \DB::select("SELECT SETVAL('selections_id_seq', (SELECT MAX(id) FROM selections));");
+        if(\DB::getDriverName() === 'pgsql')
+            \DB::select("SELECT SETVAL('selections_id_seq', (SELECT MAX(id) FROM selections));");
     }
 }
