@@ -12,35 +12,35 @@
             <th rowspan="2" align="center">ADMIS</th>
 
             <th colspan="2" align="center">1°CRFI</th>
-            <th rowspan="2" align="center">1°CFA ({{ $centres->where('centre', '1°CFA')->first()->masculin }})</th>
-            <th rowspan="2" align="center">2°CRFI ({{ $centres->where('centre', '2°CRFI')->first()->masculin }})</th>
+            <th rowspan="2" align="center">1°CFA ({{ $centres->where('centre', '1°CFA')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">2°CRFI ({{ $centres->where('centre', '2°CRFI')->first()?->masculin ?? 0 }})</th>
             <th colspan="2" align="center">2°CFA</th>
-            <th rowspan="2" align="center">6°CFA ({{ $centres->where('centre', '6°CFA')->first()->masculin }})</th>
-            <th rowspan="2" align="center">CISS (PF) ({{ $centres->where('centre', 'CISS')->first()->feminin }})</th>
+            <th rowspan="2" align="center">6°CFA ({{ $centres->where('centre', '6°CFA')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">CISS (PF) ({{ $centres->where('centre', 'CISS')->first()?->feminin ?? 0 }})</th>
             <th colspan="2" align="center">7°CFA </th>
-            <th rowspan="2" align="center">5°CFA ({{ $centres->where('centre', '5°CFA')->first()->masculin }})
+            <th rowspan="2" align="center">5°CFA ({{ $centres->where('centre', '5°CFA')->first()?->masculin ?? 0 }})
             </th>
-            <th rowspan="2" align="center">4°CFA ({{ $centres->where('centre', '4°CFA')->first()->masculin }})</th>
-            <th rowspan="2" align="center">2°BAFRA ({{ $centres->where('centre', '2°BAFRA')->first()->masculin }})
+            <th rowspan="2" align="center">4°CFA ({{ $centres->where('centre', '4°CFA')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">2°BAFRA ({{ $centres->where('centre', '2°BAFRA')->first()?->masculin ?? 0 }})
             </th>
-            <th rowspan="2" align="center">3°BAFRA ({{ $centres->where('centre', '3°BAFRA')->first()->masculin }})
+            <th rowspan="2" align="center">3°BAFRA ({{ $centres->where('centre', '3°BAFRA')->first()?->masculin ?? 0 }})
             </th>
-            <th rowspan="2" align="center">5°BAFRA ({{ $centres->where('centre', '5°BAFRA')->first()->masculin }})
+            <th rowspan="2" align="center">5°BAFRA ({{ $centres->where('centre', '5°BAFRA')->first()?->masculin ?? 0 }})
             </th>
-            <th rowspan="2" align="center">3°CFA ({{ $centres->where('centre', '3°CFA')->first()->masculin }})
+            <th rowspan="2" align="center">3°CFA ({{ $centres->where('centre', '3°CFA')->first()?->masculin ?? 0 }})
             </th>
-            <th rowspan="2" align="center">BEFRA ({{ $centres->where('centre', 'BEFRA')->first()->masculin }})</th>
-            <th rowspan="2" align="center">BASG (PF) ({{ $centres->where('centre', 'BASG')->first()->feminin }})</th>
-            <th rowspan="2" align="center">13°BRIMOTO ({{ $centres->where('centre', '13°BRIMOTO')->first()->masculin }})</th>
-            <th rowspan="2" align="center">1°BN ({{ $centres->where('centre', '1°BN')->first()->masculin }})</th>
-            <th rowspan="2" align="center">5°BMI ({{ $centres->where('centre', '5°BMI')->first()->masculin }})</th>
-            <th rowspan="2" align="center">12°RRC ({{ $centres->where('centre', '12°RRC')->first()->masculin }})</th>
-            <th rowspan="2" align="center">7°GAR ({{ $centres->where('centre', '7°GAR')->first()->masculin }})</th>
-            <th rowspan="2" align="center">1°B.GEN ({{ $centres->where('centre', '1°B.GENIE')->first()->masculin }})</th>
+            <th rowspan="2" align="center">BEFRA ({{ $centres->where('centre', 'BEFRA')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">BASG (PF) ({{ $centres->where('centre', 'BASG')->first()?->feminin ?? 0 }})</th>
+            <th rowspan="2" align="center">13°BRIMOTO ({{ $centres->where('centre', '13°BRIMOTO')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">1°BN ({{ $centres->where('centre', '1°BN')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">5°BMI ({{ $centres->where('centre', '5°BMI')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">12°RRC ({{ $centres->where('centre', '12°RRC')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">7°GAR ({{ $centres->where('centre', '7°GAR')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">1°B.GEN ({{ $centres->where('centre', '1°B.GENIE')->first()?->masculin ?? 0 }})</th>
             {{--  nouvellement ajouté --}}
-            <th rowspan="2" align="center">23°GAR ({{ $centres->where('centre', '23°GAR')->first()->masculin }})</th>
-            <th rowspan="2" align="center">1°GT ({{ $centres->where('centre', '1°GT')->first()->masculin }})</th>
-            <th rowspan="2" align="center">1°GEC ({{ $centres->where('centre', '1°GEC')->first()->masculin }})</th>
+            <th rowspan="2" align="center">23°GAR ({{ $centres->where('centre', '23°GAR')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">1°GT ({{ $centres->where('centre', '1°GT')->first()?->masculin ?? 0 }})</th>
+            <th rowspan="2" align="center">1°GEC ({{ $centres->where('centre', '1°GEC')->first()?->masculin ?? 0 }})</th>
 
 
             <th rowspan="2" align="center">SNTL</th>
@@ -49,12 +49,12 @@
 
         </tr>
         <tr>
-            <th align="center">PM ({{ $centres->where('centre', '1°CRFI')->first()->masculin }})</th>
-            <th align="center">PF ({{ $centres->where('centre', '1°CRFI')->first()->feminin }})</th>
-            <th align="center">PM ({{ $centres->where('centre', '2°CFA')->first()->masculin }})</th>
-            <th align="center">PF ({{ $centres->where('centre', '2°CFA')->first()->feminin }})</th>
-            <th align="center">PM ({{ $centres->where('centre', '7°CFA')->first()->masculin }})</th>
-            <th align="center">PF ({{ $centres->where('centre', '7°CFA')->first()->feminin }})</th>
+            <th align="center">PM ({{ $centres->where('centre', '1°CRFI')->first()?->masculin ?? 0 }})</th>
+            <th align="center">PF ({{ $centres->where('centre', '1°CRFI')->first()?->feminin ?? 0 }})</th>
+            <th align="center">PM ({{ $centres->where('centre', '2°CFA')->first()?->masculin ?? 0 }})</th>
+            <th align="center">PF ({{ $centres->where('centre', '2°CFA')->first()?->feminin ?? 0 }})</th>
+            <th align="center">PM ({{ $centres->where('centre', '7°CFA')->first()?->masculin ?? 0 }})</th>
+            <th align="center">PF ({{ $centres->where('centre', '7°CFA')->first()?->feminin ?? 0 }})</th>
         </tr>
     </thead>
     <tbody>
