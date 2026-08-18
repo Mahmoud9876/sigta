@@ -33,6 +33,7 @@ class CentreSeeder extends Seeder
             ]);
         }
 
-        \DB::select("SELECT SETVAL('centres_id_seq', (SELECT MAX(id) FROM centres));");
+        if(\DB::getDriverName() === 'pgsql')
+            \DB::select("SELECT SETVAL('centres_id_seq', (SELECT MAX(id) FROM centres));");
     }
 }
