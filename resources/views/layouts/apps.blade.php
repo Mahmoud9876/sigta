@@ -68,8 +68,23 @@
 </body>
 </html>
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/vendor/pusher.js') }}"></script>
+<script src="{{ asset('js/vendor/echo.js') }}"></script>
 <script src="{{ asset('assets/js/notify.min.js') }}"></script>
 <audio id="notification" src="{{asset('assets/audio/notification.mp3')}}" type="audio/mp3"></audio>
+<script>
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: '{{ config("broadcasting.connections.reverb.key") }}',
+        cluster: 'mt1',
+        wsHost: '{{ config("broadcasting.connections.reverb.options.host") }}',
+        wsPort: {{ config("broadcasting.connections.reverb.options.port") }},
+        wssPort: {{ config("broadcasting.connections.reverb.options.port") }},
+        forceTLS: false,
+        enabledTransports: ['ws'],
+        disableStats: true,
+    });
+</script>
 <script>
     var audio = document.getElementById("notification");
 
@@ -81,7 +96,7 @@
         audio.pause();
     }
 
-    Echo.private('events')
+    window.Echo.private('events')
         .listen('AssujettiEvent', function (e) {
             if(e.operation == 'inc') {
                 playAudio()
