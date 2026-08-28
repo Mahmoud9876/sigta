@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             AssujettisSeeder::class,
             CentreSeeder::class,
             SelectionSeeder::class,
+            TarifSeeder::class,
+            VilleSeeder::class,
             UserSeeder::class,
             UserAllSeeder::class
         ]);
