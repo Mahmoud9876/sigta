@@ -67,6 +67,15 @@ echo 3;
             return response()->json('ASSUJETTI NON TROUVÉ', 403);
         }
 
+        if (in_array($request->field, ['presentation', 'transport']) && $request->filled('value')) {
+            $year = date('Y');
+            $min = $year . '-09-01';
+            $max = $year . '-09-30';
+            if ($request->value < $min || $request->value > $max) {
+                return response()->json('La date doit être comprise entre le 01/09 et le 30/09/' . $year, 422);
+            }
+        }
+
         $operation = $this->operation($assujetti, $request);
         $this->fireEvent($assujetti, $request, $operation);
 
