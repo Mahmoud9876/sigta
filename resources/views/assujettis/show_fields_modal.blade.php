@@ -140,7 +140,7 @@
         DATE DE PRESENTATION
     </div>
     <div class="col-md-7">
-        <input name="presentation" type="date" onchange="update(this.value, 'presentation')" id="presentation" value="" class="form-control">
+        <input name="presentation" type="date" id="presentation" value="" class="form-control">
     </div>
     <div class="col-sm-1">
         <img id="presentation_check" height="40px" width="40px">
