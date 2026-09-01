@@ -36,6 +36,8 @@ class CreateAssujettisTable extends Migration
             $table->string('vers_selection_th');
             $table->decimal('prix', 8, 2)->nullable();
             $table->string('domicile')->nullable();
+            $table->string('ville_depart')->nullable();
+            $table->string('ville_arrivee')->nullable();
             $table->timestamps();
         });
     }
