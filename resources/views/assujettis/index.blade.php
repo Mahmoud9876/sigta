@@ -316,6 +316,8 @@ $(document).ready(function() {
                 $('#convocation').html(row.convocation)
                 $('#presentation').val(row.presentation)
                 $('#transport').val(row.transport)
+                $('#presentation').data('previous', row.presentation)
+                $('#transport').data('previous', row.transport)
                 $('#selection').html(row.selection)
                 $('#formation').val(row.formation).trigger('change.select2')
                 if (row.coupons == true) {
@@ -414,9 +416,15 @@ $(document).ready(function() {
 
             $('#presentation').on('change', function() {
                 id = $('#assujetti').val()
+                var value = $('#presentation').val()
+                if (!isValidDateRange(value)) {
+                    alert('La date doit être comprise entre le 01/09 et le 30/09/' + new Date().getFullYear());
+                    $('#presentation').val($('#presentation').data('previous'));
+                    return;
+                }
                 var data = new FormData();
                 data.append('id', id);
-                data.append('value', $('#presentation').val());
+                data.append('value', value);
                 data.append('field', 'presentation');
 
                 send(data, 'presentation', table)
@@ -563,9 +571,25 @@ $(document).ready(function() {
             });
         }
 
+        function isValidDateRange(value) {
+            if (!value) {
+                return true;
+            }
+            var year = new Date().getFullYear();
+            var min = year + '-09-01';
+            var max = year + '-09-30';
+            return value >= min && value <= max;
+        }
+
         function update(value, field) {
             console.log(value, field);
             id = $('#assujetti').val()
+
+            if ((field == 'presentation' || field == 'transport') && !isValidDateRange(value)) {
+                alert('La date doit être comprise entre le 01/09 et le 30/09/' + new Date().getFullYear());
+                $('#' + field).val($('#' + field).data('previous'));
+                return;
+            }
 
             var data = new FormData();
             data.append('id', id);
