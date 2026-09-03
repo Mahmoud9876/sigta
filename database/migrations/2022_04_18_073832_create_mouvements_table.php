@@ -19,10 +19,10 @@ class CreateMouvementsTable extends Migration
             $table->string('formation');
             $table->string('moyen');
             $table->dateTime('depart');
-//            $table->time('time');
             $table->dateTime('arrivee')->nullable();
-//            $table->time('time_arrivee')->nullable();
             $table->integer('effectif');
+            $table->double('prix')->nullable();
+            $table->string('option_moyen')->nullable();
             $table->integer('nombre');
             $table->timestamps();
         });
