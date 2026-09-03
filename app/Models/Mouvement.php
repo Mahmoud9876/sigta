@@ -20,7 +20,6 @@ class Mouvement extends Model
 
     public function getStatutAttribute()
     {
-//        dd(now()->timezone('Africa/Casablanca'));
         if($this->depart->gt(now()->timezone('Africa/Casablanca'))) {
             return 'Transport planifié';
         } elseif(!$this->arrivee) {
