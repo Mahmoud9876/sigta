@@ -23,11 +23,15 @@ class MouvementRequest extends FormRequest
      */
     public function rules()
     {
+        $year = date('Y');
+        $start = $year . '/09/01';
+        $end = $year . '/09/30';
+
         return [
             'selection' => 'nullable|string',
             'formation' => 'required|string',
             'moyen' => 'required|string',
-            'depart' => 'required|date|after_or_equal:2025/08/30|before_or_equal:2025/10/20',
+            'depart' => 'required|date|after_or_equal:' . $start . '|before_or_equal:' . $end,
             'nombre' => 'required|numeric',
             'effectif' => 'required|numeric',
         ];
