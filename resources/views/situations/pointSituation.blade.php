@@ -1,6 +1,7 @@
 @extends('layouts.apps')
 
 @section('css')
+    <meta http-equiv="refresh" content="300">
     <link rel="stylesheet" href="{{URL::asset('assets/css/jquery.dataTables.min.css')}}">
     <style>
         div.dt-buttons {
